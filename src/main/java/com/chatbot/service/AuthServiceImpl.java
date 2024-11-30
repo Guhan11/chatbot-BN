@@ -406,6 +406,7 @@ public class AuthServiceImpl implements AuthService {
 		} else {
 			throw new ApplicationContextException(UserConstants.ERRROR_MSG_USER_INFORMATION_NOT_FOUND);
 		}
+		
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 	}
 
