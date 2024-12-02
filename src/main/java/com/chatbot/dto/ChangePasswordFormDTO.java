@@ -22,16 +22,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChangePasswordFormDTO {
 
-	@NotBlank(message = "Email is Required")
-	@Size(max = 30)
-	@Email
-	private String userName;
+//	@NotBlank(message = "Email is Required")
+//	@Email
+//	@Size(max = 30)
+//	private String userName;
+
+	private Long id;
 
 	@NotBlank
-	@Size(min = 6, max = 100, message = "Old Password is required")
+//	@Size(min = 6, max = 100, message = "Old Password is required")
 	private String oldPassword;
 
 	@NotBlank
-	@Size(min = 6, max = 100, message = "New Password is required")
+//	@Size(min = 6, max = 100, message = "New Password is required")
 	private String newPassword;
 }

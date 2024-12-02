@@ -31,8 +31,8 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-	// Security configuration for HTTP requests
-	@Bean
+// Security configuration for HTTP requests
+@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.cors().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().csrf()
 				.disable().formLogin().disable().httpBasic().disable().exceptionHandling()
@@ -43,7 +43,7 @@ public class SecurityConfig {
 				.permitAll()
 				.antMatchers("/", "/error", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg",
 						"/**/*.html", "/**/*.css", "/**/*.js")
-				.permitAll().antMatchers("/api/auth/**").permitAll().antMatchers("/api/user/**", "/api/chatBot/**")
+				.permitAll().antMatchers("/api/auth/**").permitAll().antMatchers("/api/user/**", "/api/chatBot")
 				.authenticated().antMatchers("/api/**").hasAnyRole("USER", "GUEST_USER").anyRequest().authenticated();
 
 		// Add JWT Authentication Filter before UsernamePasswordAuthenticationFilter

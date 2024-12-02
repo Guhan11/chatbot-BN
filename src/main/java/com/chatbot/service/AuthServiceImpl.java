@@ -82,7 +82,8 @@ public class AuthServiceImpl implements AuthService {
 
 		String token = jwtUtils.generateToken(savedUser.getUserName());
 
-		return new SignUpResponseDTO(user.getId(), "Success", "User registered successfully.", token, user.getEmail(),user.getUserName());
+		return new SignUpResponseDTO(user.getId(), "Success", "User registered successfully.", token, user.getEmail(),
+				user.getUserName());
 	}
 
 	private UserVO getSignUpFormToUserVO(SignUpFormDTO signUpRequest) {
@@ -205,6 +206,23 @@ public class AuthServiceImpl implements AuthService {
 			}
 		}
 		return false;
+	}
+
+// 	Change Password
+	@Override
+	public String changePassword(ChangePasswordFormDTO changePasswordDTO) {
+		Optional<UserVO> optionalUser = Optional.of(userRepo.findById(changePasswordDTO.getId()).orElse(null));
+		if (optionalUser.isPresent()) {
+			UserVO user = optionalUser.get();
+			if (!passwordEncoder.matches(changePasswordDTO.getOldPassword(), user.getPassword())) {
+				return "Old password is incorrect.";
+			}
+			user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+			userRepo.save(user);
+			return "Password changed successfully.";
+		} else {
+			return "User not found.";
+		}
 	}
 
 //	private String generateOtp() {
@@ -357,34 +375,34 @@ public class AuthServiceImpl implements AuthService {
 		}
 	}
 
-	@Override
-	public void changePassword(ChangePasswordFormDTO changePasswordRequest) {
-		String methodName = "changePassword()";
-		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
-		if (ObjectUtils.isEmpty(changePasswordRequest) || StringUtils.isBlank(changePasswordRequest.getUserName())
-				|| StringUtils.isBlank(changePasswordRequest.getOldPassword())
-				|| StringUtils.isBlank(changePasswordRequest.getNewPassword())) {
-			throw new ApplicationContextException(UserConstants.ERRROR_MSG_INVALID_CHANGE_PASSWORD_INFORMATION);
-		}
-		UserVO userVO = userRepo.findByUserName(changePasswordRequest.getUserName());
-		if (ObjectUtils.isNotEmpty(userVO)) {
-			if (compareEncodedPasswordWithEncryptedPassword(changePasswordRequest.getOldPassword(),
-					userVO.getPassword())) {
-				try {
-					userVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(changePasswordRequest.getNewPassword())));
-				} catch (Exception e) {
-					throw new ApplicationContextException(UserConstants.ERRROR_MSG_UNABLE_TO_ENCODE_USER_PASSWORD);
-				}
-				userRepo.save(userVO);
-				createUserAction(userVO.getUserName(), userVO.getId(), UserConstants.USER_ACTION_TYPE_CHANGE_PASSWORD);
-			} else {
-				throw new ApplicationContextException(UserConstants.ERRROR_MSG_OLD_PASSWORD_MISMATCH);
-			}
-		} else {
-			throw new ApplicationContextException(UserConstants.ERRROR_MSG_USER_INFORMATION_NOT_FOUND);
-		}
-		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
-	}
+//	@Override
+//	public void changePassword(ChangePasswordFormDTO changePasswordRequest) {
+//		String methodName = "changePassword()";
+//		LOGGER.debug(CommonConstant.STARTING_METHOD, methodName);
+//		if (ObjectUtils.isEmpty(changePasswordRequest) || StringUtils.isBlank(changePasswordRequest.getUserName())
+//				|| StringUtils.isBlank(changePasswordRequest.getOldPassword())
+//				|| StringUtils.isBlank(changePasswordRequest.getNewPassword())) {
+//			throw new ApplicationContextException(UserConstants.ERRROR_MSG_INVALID_CHANGE_PASSWORD_INFORMATION);
+//		}
+//		UserVO userVO = userRepo.findByUserName(changePasswordRequest.getUserName());
+//		if (ObjectUtils.isNotEmpty(userVO)) {
+//			if (compareEncodedPasswordWithEncryptedPassword(changePasswordRequest.getOldPassword(),
+//					userVO.getPassword())) {
+//				try {
+//					userVO.setPassword(encoder.encode(CryptoUtils.getDecrypt(changePasswordRequest.getNewPassword())));
+//				} catch (Exception e) {
+//					throw new ApplicationContextException(UserConstants.ERRROR_MSG_UNABLE_TO_ENCODE_USER_PASSWORD);
+//				}
+//				userRepo.save(userVO);
+//				createUserAction(userVO.getUserName(), userVO.getId(), UserConstants.USER_ACTION_TYPE_CHANGE_PASSWORD);
+//			} else {
+//				throw new ApplicationContextException(UserConstants.ERRROR_MSG_OLD_PASSWORD_MISMATCH);
+//			}
+//		} else {
+//			throw new ApplicationContextException(UserConstants.ERRROR_MSG_USER_INFORMATION_NOT_FOUND);
+//		}
+//		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
+//	}
 
 	@Override
 	public void resetPassword(ResetPasswordFormDTO resetPasswordRequest) {
@@ -406,11 +424,10 @@ public class AuthServiceImpl implements AuthService {
 		} else {
 			throw new ApplicationContextException(UserConstants.ERRROR_MSG_USER_INFORMATION_NOT_FOUND);
 		}
-		
+
 		LOGGER.debug(CommonConstant.ENDING_METHOD, methodName);
 	}
 
-	
 //	@Override
 //	public GoogleLoginVO googleLogin(String userName) throws UsernameNotFoundException {
 //		GoogleLoginVO google = googleLoginRepo.findByUserName(userName);

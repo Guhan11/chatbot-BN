@@ -23,15 +23,18 @@ public interface AuthService {
 
 	public boolean verifyOtp(String email, int otp);
 
-	public void logout(String userName);
+	public String changePassword(ChangePasswordFormDTO changePasswordDTO);
 
-	
+
+	public void logout(String userName);
 
 //	public void logout(String userName);
 
-	public void changePassword(ChangePasswordFormDTO changePasswordRequest);
+//	public void changePassword(ChangePasswordFormDTO changePasswordRequest);
 
 	public void resetPassword(ResetPasswordFormDTO resetPasswordRequest);
+
+
 
 //	public UserVO login(LoginFormDTO loginRequest);
 
